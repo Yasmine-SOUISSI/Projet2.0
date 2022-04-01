@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, getImage, uploadImage } from "../JS/actions/upload";
@@ -5,13 +6,19 @@ import "./AddProduct.css";
 const AddProduct = () => {
     const newImage = useSelector((state) => state.uploadReducer.image);
 
-    const [product, setProduct] = useState({});
+    const [product, setProduct] = useState({
+        title: "",
+        description: "",
+        imageURL: "",
+    });
 
     const [fileInputState, setFileInputState] = useState("");
     const [previewSource, setPreviewSource] = useState("");
     const [selectedFile, setSelectedFile] = useState();
     const [successMsg, setSuccessMsg] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const [submit, setSubmit] = useState(false);
+    const [status, setStatus] = useState(false);
     const [image, setImage] = useState("");
     const dispatch = useDispatch();
     const handleFileInputChange = (e) => {
@@ -51,14 +58,30 @@ const AddProduct = () => {
     const handleSave = (e) => {
         e.preventDefault();
         dispatch(addProduct(product));
+        setSubmit(true);
+        setStatus(true);
+
+        setProduct({
+            title: "",
+            description: "",
+            imageURL: "",
+        });
+  
     };
     const handleChange = (e) => {
         setProduct({
             ...product,
             [e.target.name]: e.target.value,
-            imageUrl: newImage,
+            imageURL: newImage,
         });
         console.log("+++", product);
+    };
+    const handleDelete = (e) => {
+        setProduct({
+            ...product,
+            [e.target.name]: "",
+            imageURL: "",
+        });
     };
 
     console.log(product);
@@ -106,7 +129,7 @@ const AddProduct = () => {
                             type="file"
                             onChange={handleFileInputChange}
                             className="form-control"
-                            value={fileInputState}
+                            // value={fileInputState}
                         />
                     </div>
                     <br />
@@ -126,7 +149,7 @@ const AddProduct = () => {
                     >
                         Save Changes
                     </button>
-                    {/* {submit && <h1>{status ? successMsg : errMsg}</h1>} */}
+                    {submit && <h1>{status ? successMsg : errMsg}</h1>}
                 </div>
                 {newImage}
             </form>

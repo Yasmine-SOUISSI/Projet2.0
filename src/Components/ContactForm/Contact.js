@@ -16,7 +16,7 @@ function Contact() {
     const handleChange = (e) => {
         setContact({ ...contact, [e.target.name]: e.target.value });
     };
-
+    console.log(contact);
     const handleSubmit = () => {
         (contact.email && contact.subject && contact.message && contact.name) ==
         ""
@@ -25,9 +25,9 @@ function Contact() {
     };
     const handleConfirm = (e) => {
         e.preventDefault();
-        dispatch(addContact(contact));
         handleSubmit();
         setSubmit(true);
+        dispatch(addContact(contact));
         setContact({ ...contact, [e.target.name]: "" });
     };
     console.log(status);
