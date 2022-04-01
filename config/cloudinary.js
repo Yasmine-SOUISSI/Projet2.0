@@ -5,4 +5,18 @@ cloudinary.config({
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET,
 });
-module.exports = { cloudinary };
+const signUpload = async () => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = await cloudinary.utils.api_sign_request(
+        {
+            timestamp: timestamp,
+            eager: "c_pad,h_300,w_400|c_crop,h_200,w_260",
+            folder: "my_products",
+        },
+
+        process.env.CLOUDINARY_SECRET
+    );
+    return { timestamp, signature };
+};
+
+module.exports = { cloudinary, signUpload };

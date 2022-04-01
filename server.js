@@ -14,6 +14,7 @@ app.use(express.static("public"));
 app.use(express.json({ limit: "64mb" }));
 app.use(express.urlencoded({ limit: "64mb", extended: true }));
 app.use(cors());
+
 // Connect DataBase
 connectDB();
 

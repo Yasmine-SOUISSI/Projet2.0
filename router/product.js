@@ -1,14 +1,20 @@
 const express = require("express");
-const { cloudinary } = require("../config/cloudinary");
+const { cloudinary, signUpload } = require("../config/cloudinary");
 const isAuth = require("../middleware/auth");
 const router = express.Router();
 const Product = require("../models/productSchema");
+
+const sig = signUpload();
+console.log(sig);
+
 //upload image for product
 router.post("/upload", async (req, res) => {
     try {
         const fileStr = req.body.data;
+
         const uploadResponse = await cloudinary.uploader.upload(fileStr, {
             upload_preset: "my_products",
+            signature: sig.signature,
         });
         console.log(uploadResponse);
         res.status(200).json({ msg: "yessss", uploadResponse });
@@ -42,8 +48,8 @@ router.get("/image", async (req, res) => {
             .max_results(1)
             .execute();
         const Url = resources[0].url;
-        res.send(Url);
-        res.status(200).json({ msg: "yessss", Url });
+
+        res.status(200).send(Url);
     } catch (err) {
         console.error(err);
         res.status(500).json({ err: "Something went wronggggg" });
@@ -54,6 +60,15 @@ router.get("/image", async (req, res) => {
 router.post("/addproduct", isAuth, async (req, res) => {
     try {
         const { imageURL, title, description } = req.body;
+        // const imageURL = await cloudinary.uploader.upload(req.file.path, {
+        //     upload_preset: "my_products",
+        //     signature: sig.signature,
+        // });
+
+        console.log(imageURL);
+        console.log(title);
+        console.log(description);
+
         if (!title || !description || !imageURL) {
             return res.status(400).send("infos are required");
         }
@@ -61,11 +76,13 @@ router.post("/addproduct", isAuth, async (req, res) => {
             title,
             description,
             imageURL,
+            //image: imageURL.url,
         });
 
         await product.save();
         res.status(200).send({ msg: "event added", product });
     } catch (error) {
+        console.error(error);
         res.status(500).send("impossible to add a new product");
     }
 });
